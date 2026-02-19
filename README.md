@@ -28,7 +28,7 @@ int main() {
     }
 }
 
-2. Configure UART
+### 2. Configure UART
 
 
 ​Ensure your UART interface is initialized before potential crashes occur. The handler will use the configured UART to transmit the crash report.
