@@ -34,10 +34,11 @@ int main() {
 ​Ensure your UART interface is initialized before potential crashes occur. The handler will use the configured UART to transmit the crash report.
 
 
-​📟 Example Diagnostic Log
+​📟 Example Diagnostic Log:
 
 
 ​When the RP2350 encounters a HardFault (e.g., illegal memory access), the serial terminal will output:
+
 --- !!! CRASH DUMP DETECTED !!! ---
 Exception Type: HardFault
 R0:  0x00000000    R1:  0x20001234
@@ -47,23 +48,10 @@ PC:  0x100005A2    xPSR:0x01000000
 --- END OF DUMP ---
 
 🏗️ Technical Specs
-
-
-
-
-​Architecture: ARM Cortex-M33 / Hazard3 RISC-V (RP2350)
-
-
-​Target Hardware: Raspberry Pi Pico 2 / Pico 2 W
-
-
-​Language: C++
-
-
+Architecture: ARM Cortex-M33 / Hazard3 RISC-V (RP2350)
+Target Hardware: Raspberry Pi Pico 2 / Pico 2 W
+Language: C++
 ​Platform: Raspberry Pi Pico SDK 2.x
-
-
-
 
 ​Developed as part of the n64_pico_project for advanced debugging and hardware-level stability.
 
