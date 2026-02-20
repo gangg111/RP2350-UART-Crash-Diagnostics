@@ -1,58 +1,79 @@
-# RP2350 UART Crash Diagnostics
+# 🚀 UART Manager Kernel
+### Professional Menu & Command Dispatcher for RP2040 & RP2350
 
-A professional-grade **HardFault Handler** and diagnostic tool designed specifically for the **RP2350 (Raspberry Pi Pico 2 / Pico 2 W)**. This tool captures the exact state of the processor at the moment of a critical system crash and provides a detailed register dump via UART.
+A lightweight, non-blocking UART communication framework for Raspberry Pi Pico projects. This "Kernel" separates core logic from hardware configuration, making your code clean, modular, and easy to port between different projects (N64, HDMI, Sensors, etc.).
 
-## 🚀 Key Features
+---
 
-* **Full Register Dump:** Automatically captures and prints core registers (`r0-r12`, `LR`, `PC`, `xPSR`) during a fault.
-* **Kernel Diagnostics:** Leverages ARM Cortex-M33 system registers (NVIC, ICSR) to pinpoint the cause of the exception.
-* **Optimized for Pico 2 W:** Default configuration uses diagnostic pins (GPIO 20/21) for UART logging.
-* **Zero Dependencies:** Lightweight C++ implementation that integrates directly into the Raspberry Pi Pico SDK.
+## 📁 Project Structure
+The system is divided into two layers:
 
-## 🛠️ Installation & Usage
+1.  **The Kernel (`uart_manager.cpp/h`)**: The engine that handles input, ANSI terminal formatting, and command routing. **Do not modify this for new projects.**
+2.  **The Config (`uart_cfg.c/h`)**: The user-defined layer. This is where you put your project-specific pinout tables and status messages.
 
-### 1. Integrate the Header
-Copy `uart_diag.h` into your project directory and include it in your `main.cpp`:
+## 📍 Command Interface
+| Key | Function | Description |
+|:---:|:---|:---|
+| **`p`** | **Show Pinout** | Displays the hardware wiring map (defined in `uart_cfg.c`) |
+| **`s`** | **Show Status** | Displays system telemetry and hardware health |
+| **`h`** | **Help / Reset** | Clears the terminal screen and shows the command menu |
 
-```cpp
-#include "pico/stdlib.h"
-#include "uart_diag.h"
+---
+
+## 🛠 Integration Guide
+
+### 1. Project Setup
+Add the files to your `CMakeLists.txt`. This kernel works on both **RP2040** and **RP2350**.
+
+```cmake
+# Add these files to your executable
+add_executable(${PROJECT_NAME}
+    main.cpp
+    uart_manager.cpp
+    uart_cfg.c
+)
+
+# 2. Main Loop Implementation
+  Call the handler in your main loop using getchar_timeout_us(0) to ensure non-blocking operation.
+
+#include "uart_manager.h"
 
 int main() {
-    // Standard initialization
     stdio_init_all();
-    
-    // Your n64_pico_project logic here
+
     while (true) {
-        // ...
+        // Non-blocking UART read
+        int cmd = getchar_timeout_us(0);
+        
+        if (cmd != PICO_ERROR_TIMEOUT) {
+            handle_uart_input(cmd);
+        }
+
+        // Your time-critical tasks (Video/Audio) continue running here
     }
 }
 
-### 2. Configure UART
+# 3. Customizing for your Hardware
+  Edit uart_cfg.c to describe your specific wiring.
 
+void print_project_pinout(void) {
+    printf("\n--- PROJECT PINOUT MAP ---\n");
+    printf("  SIGNAL      |  GPIO  |  DIRECTION\n");
+    printf("  ------------|--------|-----------\n");
+    printf("  DATA_BUS    |  0-7   |  In/Out\n");
+    printf("  STATUS_LED  |  25    |  Output\n");
+}
 
-​Ensure your UART interface is initialized before potential crashes occur. The handler will use the configured UART to transmit the crash report.
+#⚡ Multi-Platform Support
+This kernel is fully compatible with:
+Raspberry Pi Pico (RP2040)
+Raspberry Pi Pico 2 / 2 W (RP2350)
+Pico-W / Pico-2-W (Supports LED control via CYW43 architecture)
 
+#🖥 Terminal Compatibility
+For the best experience (including colors and screen clearing), use a terminal that supports ANSI Escape Codes, such as:
+    PuTTY
+    Tera Term
+    VS Code Serial Monitor
 
-​📟 Example Diagnostic Log:
-
-
-​When the RP2350 encounters a HardFault (e.g., illegal memory access), the serial terminal will output:
-
---- !!! CRASH DUMP DETECTED !!! ---
-Exception Type: HardFault
-R0:  0x00000000    R1:  0x20001234
-R2:  0x00000001    R3:  0x10000F00
-R12: 0x20040000    LR:  0x100004BF
-PC:  0x100005A2    xPSR:0x01000000
---- END OF DUMP ---
-
-🏗️ Technical Specs
-Architecture: ARM Cortex-M33 / Hazard3 RISC-V (RP2350)
-Target Hardware: Raspberry Pi Pico 2 / Pico 2 W
-Language: C++
-​Platform: Raspberry Pi Pico SDK 2.x
-
-​Developed as part of the n64_pico_project for advanced debugging and hardware-level stability.
-
-
+® by DriftKing
