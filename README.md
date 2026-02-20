@@ -1,7 +1,7 @@
 <h1>🚀 UART Manager Kernel</h1>
 <h3>Professional Menu & Command Dispatcher for RP2040 & RP2350</h3>
 
-<p>A lightweight, non-blocking UART communication framework for Raspberry Pi Pico projects. This "Kernel" separates core logic from hardware configuration, making your code clean, modular, and easy to port between different projects (N64, HDMI, Sensors, etc.).</p>
+<p>A lightweight, non-blocking UART communication framework for Raspberry Pi Pico projects. This "Kernel" separates core logic from hardware configuration, making your code clean, modular, and easy to port between different projects (HDMI, Sensors, etc.).</p>
 
 <hr>
 
